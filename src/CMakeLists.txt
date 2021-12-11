@@ -1,0 +1,5 @@
+file(GLOB SRC_FILES "*.cu")
+add_library(HashTable STATIC ${SRC_FILES})
+target_compile_features(HashTable PRIVATE cuda_std_17)
+target_include_directories(HashTable PUBLIC ${CMAKE_SOURCE_DIR}/include)
+add_library(HashTable::HashTable ALIAS HashTable)
