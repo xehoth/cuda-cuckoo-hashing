@@ -16,8 +16,14 @@ class HashTable;
 
 template <std::uint32_t C, std::uint32_t N_H, std::uint32_t S,
           std::uint32_t hash_func_i>
-__global__ void insert_kernel(HashTable<N_H, C> table,
+__global__ void insert_kernel(HashTable<C, N_H> table,
                               DeviceArray<std::uint32_t, S> keys);
+
+template <std::uint32_t C, std::uint32_t N_H, std::uint32_t S,
+          std::uint32_t hash_func_i>
+__global__ void lookup_kernel(HashTable<C, N_H> table,
+                              DeviceArray<std::uint32_t, S> keys,
+                              DeviceArray<std::uint32_t, S> res);
 
 template <std::uint32_t C, std::uint32_t N_H, std::uint32_t EMPTY_KEY>
 class HashTable {
@@ -36,17 +42,55 @@ class HashTable {
     collisions.free();
   }
 
+  template <typename std::uint32_t S>
+  void lookup(DeviceArray<std::uint32_t, S> keys,
+              DeviceArray<std::uint32_t, S> res) {}
+
+  template <std::uint32_t hash_func_i>
+  __forceinline__ void post_insert() {}
+
   template <std::uint32_t S, std::uint32_t hash_func_i = 0>
   __forceinline__ void insert(DeviceArray<std::uint32_t, S> keys) {
-    insert_kernel<C, N_H, S, hash_func_i><<<ceil(S / 256.0), 256>>>(*this, keys);
+    insert_kernel<C, N_H, S, hash_func_i>
+        <<<ceil(S / 256.0), 256>>>(*this, keys);
     std::uint32_t h_collisions = 0;
     cudaMemcpy(&h_collisions, collisions.data, sizeof(std::uint32_t),
                cudaMemcpyDeviceToHost);
-    if (h_collisions == 0) return;
+    if (h_collisions == 0) {
+      post_insert<hash_func_i>();
+      return;
+    }
+    printf("rehash %d\n", hash_func_i + 1);
+    clear();
+    if constexpr (hash_func_i < 4) {
+      insert<S, hash_func_i + 1>(keys);
+    } else {
+      printf("too much\n");
+      return;
+    }
+  }
+
+  template <std::uint32_t S, std::uint32_t LS, std::uint32_t hash_func_i = 0>
+  __forceinline__ void insert_and_lookup(
+      DeviceArray<std::uint32_t, S> keys,
+      DeviceArray<std::uint32_t, LS> lookup_keys,
+      DeviceArray<std::uint32_t, LS> res, Timer &timer) {
+    insert_kernel<C, N_H, S, hash_func_i>
+        <<<ceil(S / 256.0), 256>>>(*this, keys);
+    std::uint32_t h_collisions = 0;
+    cudaMemcpy(&h_collisions, collisions.data, sizeof(std::uint32_t),
+               cudaMemcpyDeviceToHost);
+    if (h_collisions == 0) {
+      timer.start();
+      lookup_kernel<C, N_H, LS, hash_func_i>
+          <<<ceil(S / 256.0), 256>>>(*this, lookup_keys, res);
+      timer.end();
+      return;
+    }
     printf("rehash %d\n", hash_func_i + 1);
     clear();
     if constexpr (hash_func_i < 128) {
-      insert<S, hash_func_i + 1>(keys);
+      insert_and_lookup<S, LS, hash_func_i + 1>(keys, lookup_keys, res, timer);
     } else {
       printf("too much\n");
       return;
@@ -64,7 +108,7 @@ class HashTable {
     for (std::uint32_t i = 0; i < N_H; ++i) {
       for (std::uint32_t j = 0; j < C; ++j) {
         if (h_slots[i](j) != EMPTY_KEY && i == 2) {
-//          printf("%u: (%d, %d)\n", h_slots[i](j), i, j);
+          //          printf("%u: (%d, %d)\n", h_slots[i](j), i, j);
         }
       }
     }
@@ -103,12 +147,42 @@ struct TemplateInsert<cur, N_H, 0, hash_func_i> {
   }
 };
 
+template <std::uint32_t cur, std::uint32_t N_H, std::uint32_t hash_func_i>
+struct TemplateLookup {
+  template <std::uint32_t C>
+  static __device__ __forceinline__ bool lookup(HashTable<C, N_H> table,
+                                                std::uint32_t key) {
+    if (key == table.slots[cur](TemplateHash<cur + hash_func_i>::hash(key) % C))
+      return true;
+    return TemplateLookup<cur + 1, N_H, hash_func_i>::lookup<C>(table, key);
+  }
+};
+
+template <std::uint32_t N_H, std::uint32_t hash_func_i>
+struct TemplateLookup<N_H, N_H, hash_func_i> {
+  template <std::uint32_t C>
+  static __device__ __forceinline__ bool lookup(HashTable<C, N_H>,
+                                                std::uint32_t) {
+    return false;
+  }
+};
+
 template <std::uint32_t C, std::uint32_t N_H, std::uint32_t S,
           std::uint32_t hash_func_i>
 __global__ void insert_kernel(HashTable<C, N_H> table,
                               DeviceArray<std::uint32_t, S> keys) {
   cuda_foreach_unsigned(x, 0, S) {
-    TemplateInsert<0, N_H, 4 * 20, hash_func_i>::insert<C>(table, keys(x));
+    TemplateInsert<0, N_H, 4 * 3, hash_func_i>::insert<C>(table, keys(x));
+  }
+}
+
+template <std::uint32_t C, std::uint32_t N_H, std::uint32_t S,
+          std::uint32_t hash_func_i>
+__global__ void lookup_kernel(HashTable<C, N_H> table,
+                              DeviceArray<std::uint32_t, S> keys,
+                              DeviceArray<std::uint32_t, S> res) {
+  cuda_foreach_unsigned(x, 0, keys.size()) {
+    res(x) = TemplateLookup<0, N_H, hash_func_i>::lookup<C>(table, keys(x));
   }
 }
 #endif  // CS121_LAB2_INCLUDE_HASH_TABLE_CUH_

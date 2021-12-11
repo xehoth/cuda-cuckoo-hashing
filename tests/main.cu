@@ -31,15 +31,27 @@ int main() {
     while (h(i) == -1u) h(i) = dis(engine);
   }
   std::cerr << "generate done" << std::endl;
-  DeviceArray<std::uint32_t, S> d;
+  DeviceArray<std::uint32_t, S> d, lookup, res;
   d = h;
+  lookup = h;
+  std::uint32_t a = 1000;
+  cudaMemcpy(lookup.data, &a, sizeof(std::uint32_t), cudaMemcpyHostToDevice);
+  res.constant_fill<0>();
 
   Timer timer;
   for (int i = 0; i < 5; ++i) {
-    timer.start();
-    table.insert(d);
-    timer.end();
+//    timer.start();
+//    table.insert(d);
+//    timer.end();
+    table.insert_and_lookup<S, S>(d, lookup, res, timer);
     table.clear();
+  }
+  HostArray<std::uint32_t, S> h_res;
+  h_res = res;
+  for (std::uint32_t i = 0; i < h_res.size(); ++i) {
+    if (h_res(i) != 1) {
+      printf("wrong answer %d !!!!", i);
+    }
   }
   table.print();
   cudaDeviceSynchronize();
