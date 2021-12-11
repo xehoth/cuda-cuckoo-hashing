@@ -62,7 +62,7 @@ class HashTable {
     }
     printf("rehash %d\n", hash_func_i + 1);
     clear();
-    if constexpr (hash_func_i < 4) {
+    if constexpr (hash_func_i < 128) {
       insert<S, hash_func_i + 1>(keys);
     } else {
       printf("too much\n");
@@ -172,7 +172,7 @@ template <std::uint32_t C, std::uint32_t N_H, std::uint32_t S,
 __global__ void insert_kernel(HashTable<C, N_H> table,
                               DeviceArray<std::uint32_t, S> keys) {
   cuda_foreach_unsigned(x, 0, S) {
-    TemplateInsert<0, N_H, 4 * 3, hash_func_i>::insert<C>(table, keys(x));
+    TemplateInsert<0, N_H, 40, hash_func_i>::insert<C>(table, keys(x));
   }
 }
 

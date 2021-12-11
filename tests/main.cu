@@ -10,7 +10,7 @@
 __global__ void test() { printf("%d %d\n", blockIdx.x, threadIdx.x); }
 
 int main() {
-  HashTable<std::uint32_t((1 << 24) * 1.02), 3> table;
+  HashTable<std::uint32_t((1 << 24) * 2), 2> table;
   constexpr int S = 1 << 24;
   HostArray<std::uint32_t, S> h;
   std::set<std::uint32_t> set;
@@ -40,24 +40,24 @@ int main() {
 
   Timer timer;
   for (int i = 0; i < 5; ++i) {
-//    timer.start();
-//    table.insert(d);
-//    timer.end();
-    table.insert_and_lookup<S, S>(d, lookup, res, timer);
+    timer.start();
+    table.insert(d);
+    timer.end();
+//    table.insert_and_lookup<S, S>(d, lookup, res, timer);
     table.clear();
   }
-  HostArray<std::uint32_t, S> h_res;
-  h_res = res;
-  for (std::uint32_t i = 0; i < h_res.size(); ++i) {
-    if (h_res(i) != 1) {
-      printf("wrong answer %d !!!!", i);
-    }
-  }
+//  HostArray<std::uint32_t, S> h_res;
+//  h_res = res;
+//  for (std::uint32_t i = 0; i < h_res.size(); ++i) {
+//    if (h_res(i) != 1) {
+//      printf("wrong answer %d !!!!", i);
+//    }
+//  }
   table.print();
   cudaDeviceSynchronize();
   table.free();
   d.free();
   h.free();
-  timer.report(1 << 25);
+  timer.report(S);
   return 0;
 }
