@@ -7,6 +7,7 @@
 #include <cuda_runtime.h>
 #include <vector>
 #include <cstdint>
+#include <string>
 
 class Timer {
  public:
@@ -19,6 +20,7 @@ class Timer {
   [[nodiscard]] double average() const;
   [[nodiscard]] double stddev() const;
   void report(std::uint32_t keys) const;
+  [[nodiscard]] std::string to_string(std::uint32_t keys) const;
 
  private:
   std::vector<double> times;

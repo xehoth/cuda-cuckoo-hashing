@@ -6,11 +6,11 @@
 #include <set>
 #include <random>
 #include <iostream>
-
+#include <rng.cuh>
 __global__ void test() { printf("%d %d\n", blockIdx.x, threadIdx.x); }
 
 int main() {
-  HashTable<std::uint32_t((1 << 24) * 2), 2> table;
+  HashTable<std::uint32_t((1 << 24) * 1.01), 3> table;
   constexpr int S = 1 << 24;
   HostArray<std::uint32_t, S> h;
   std::set<std::uint32_t> set;

@@ -1,5 +1,5 @@
 //
-// Created by 82454 on 2021/12/11.
+// Created by xehoth on 2021/12/11.
 //
 
 #ifndef CS121_LAB2_INCLUDE_HELPER_CUH_
