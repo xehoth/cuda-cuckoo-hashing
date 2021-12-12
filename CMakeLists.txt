@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(CS121-lab2 LANGUAGES CUDA CXX)
+set(CUDA_SEPARABLE_COMPILATION ON)
 find_package(OpenMP REQUIRED)
 add_subdirectory(src)
 add_subdirectory(tests)
