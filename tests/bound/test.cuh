@@ -11,7 +11,7 @@
 
 template <std::uint32_t l, std::uint32_t N_H>
 std::string do_test4() {
-  fprintf(stderr, "test3 (C = %.1f, t = %u):\n", l / 10.0, N_H);
+  fprintf(stderr, "test4 (C = %.1f, t = %u):\n", l / 10.0, N_H);
   constexpr std::uint32_t S = 1 << 24;
   constexpr auto C = static_cast<std::uint32_t>(S * 1.4 + 1 - 1e-10);
   constexpr auto bound = static_cast<std::uint32_t>(24 * l / 10.0 + 1 - 1e-10);

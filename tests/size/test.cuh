@@ -10,7 +10,8 @@
 
 template <std::uint32_t C, std::uint32_t N_H>
 std::string do_test3() {
-  fprintf(stderr, "test3 (C = %u, t = %u):\n", C, N_H);
+  fprintf(stderr, "test3 (ratio = %.2f, t = %u):\n",
+          static_cast<double>(C) / (1 << 24), N_H);
   HashTable<C, 4 * 24, N_H> table;
   constexpr std::uint32_t S = 1 << 24;
   fprintf(stderr, "  generate random set ... ");

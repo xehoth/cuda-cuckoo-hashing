@@ -57,7 +57,7 @@ class HashTable {
     }
     fprintf(stderr, "[rehash %d] ", hash_func_i + 1);
     clear();
-    if constexpr (hash_func_i < 16) {
+    if constexpr (hash_func_i < 32) {
       insert<S, hash_func_i + 1>(keys);
     } else {
       fprintf(stderr, "[rehash too long, failed] ");
@@ -84,7 +84,7 @@ class HashTable {
     }
     fprintf(stderr, "[rehash %d] ", hash_func_i + 1);
     clear();
-    if constexpr (hash_func_i < 16) {
+    if constexpr (hash_func_i < 32) {
       insert_and_lookup<S, LS, hash_func_i + 1>(keys, lookup_keys, res, timer);
     } else {
       fprintf(stderr, "[rehash too long, failed] ");
