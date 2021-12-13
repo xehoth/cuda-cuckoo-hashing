@@ -42,7 +42,6 @@ const std::vector<std::uint32_t> &generate_random_lookup_set(
   if (cache.size() == S) {
     return cache;
   }
-  fprintf(stderr, "????");
   std::mt19937 engine(495);
   std::uniform_int_distribution<std::uint32_t> dis_val(0, -1u);
   std::unordered_set<std::uint32_t> filter(set.data, set.data + set.size());

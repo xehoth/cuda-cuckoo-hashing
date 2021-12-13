@@ -102,8 +102,8 @@ class HashTable {
     for (std::uint32_t i = 0; i < N_H; ++i) h_slots[i] = slots[i];
     for (std::uint32_t i = 0; i < N_H; ++i) {
       for (std::uint32_t j = 0; j < C; ++j) {
-        if (h_slots[i](j) != EMPTY_KEY && i == 2) {
-          //          printf("%u: (%d, %d)\n", h_slots[i](j), i, j);
+        if (h_slots[i](j) != EMPTY_KEY) {
+          printf("%u: (%u, %u)\n", h_slots[i](j), i, j);
         }
       }
     }
