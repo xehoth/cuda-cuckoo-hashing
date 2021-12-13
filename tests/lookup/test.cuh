@@ -60,6 +60,7 @@ std::string do_test2() {
   d_lookup_set.free();
   d_res.free();
   table.free();
+  timer.report(S);
   fprintf(stderr, "done\n\n");
   return timer.to_string(S);
 }

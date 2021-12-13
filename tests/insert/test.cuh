@@ -36,6 +36,7 @@ std::string do_test1() {
   fprintf(stderr, "  done\n");
   d_set.free();
   table.free();
+  timer.report(S);
   fprintf(stderr, "done\n\n");
   return timer.to_string(S);
 }
