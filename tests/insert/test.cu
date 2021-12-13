@@ -36,7 +36,7 @@ extern std::string do_test1_23_3();
 extern std::string do_test1_24_3();
 
 void do_test1_all() {
-  std::ofstream out("test1.bench");
+  std::ofstream out("insert.bench");
   out << do_test1_10_2();
   out << do_test1_11_2();
   out << do_test1_12_2();
