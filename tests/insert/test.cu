@@ -36,6 +36,9 @@ extern std::string do_test1_23_3();
 extern std::string do_test1_24_3();
 
 void do_test1_all() {
+  printf("Insert test:\n");
+  printf("Result saves to insert.bench\n");
+  printf("%-4s%-4s%-12s%-12s%-12s\n", "s", "t", "MOPS", "mean/ms", "stddev/ms");
   std::ofstream out("insert.bench");
   out << do_test1_10_2();
   out << do_test1_11_2();

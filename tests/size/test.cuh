@@ -33,6 +33,7 @@ std::string do_test3() {
   fprintf(stderr, "  done\n");
   d_set.free();
   table.free();
+  printf("%-6.2f%-4u", static_cast<double>(C) / (1 << 24), N_H);
   timer.report(S);
   fprintf(stderr, "done\n\n");
   return timer.to_string(S);

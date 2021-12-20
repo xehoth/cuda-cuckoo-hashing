@@ -44,8 +44,7 @@ double Timer::stddev() const {
 void Timer::report(std::uint32_t keys) const {
   double avg = average();
   double mops = keys / 1e6 / avg;
-  std::cout << mops << "MOPS, stddev: " << 1000 * stddev()
-            << ", time: " << avg * 1000 << std::endl;
+  printf("%-12.6f%-12.6f%-12.6f\n", mops, avg * 1000, 1000 * stddev());
 }
 
 std::string Timer::to_string(std::uint32_t keys) const {

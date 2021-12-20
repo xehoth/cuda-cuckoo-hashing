@@ -43,6 +43,9 @@ extern std::string do_test4_144_3();
 extern std::string do_test4_192_3();
 
 void do_test4_all() {
+  printf("Bound test:\n");
+  printf("Result saves to bound.bench\n");
+  printf("%-8s%-4s%-12s%-12s%-12s\n", "bound", "t", "MOPS", "mean/ms", "stddev/ms");
   std::ofstream out("bound.bench");
   out << do_test4_2_2();
   out << do_test4_4_2();

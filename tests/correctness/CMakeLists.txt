@@ -1,0 +1,5 @@
+project(correctness_test LANGUAGES CUDA)
+file(GLOB SRC_FILES "*.cu")
+add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
+target_compile_features(${PROJECT_NAME} PRIVATE cuda_std_17)
+target_link_libraries(${PROJECT_NAME} PRIVATE HashTable::HashTable OpenMP::OpenMP_CXX)

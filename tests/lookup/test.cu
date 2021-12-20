@@ -29,6 +29,9 @@ extern std::string do_test2_9_3();
 extern std::string do_test2_10_3();
 
 void do_test2_all() {
+  printf("Lookup test:\n");
+  printf("Result saves to lookup.bench\n");
+  printf("%-4s%-4s%-12s%-12s%-12s\n", "i", "t", "MOPS", "mean/ms", "stddev/ms");
   std::ofstream out("lookup.bench");
   out << do_test2_0_2();
   out << do_test2_1_2();

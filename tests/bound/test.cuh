@@ -35,6 +35,7 @@ std::string do_test4() {
   fprintf(stderr, "  done\n");
   d_set.free();
   table.free();
+  printf("%-8.1f%-4u", l / 10.0, N_H);
   timer.report(S);
   fprintf(stderr, "done\n\n");
   return timer.to_string(S);

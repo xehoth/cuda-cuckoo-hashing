@@ -33,6 +33,9 @@ extern std::string do_test3_102_3();
 extern std::string do_test3_105_3();
 
 void do_test3_all() {
+  printf("Size test:\n");
+  printf("Result saves to size.bench\n");
+  printf("%-6s%-4s%-12s%-12s%-12s\n", "size", "t", "MOPS", "mean/ms", "stddev/ms");
   std::ofstream out("size.bench");
   out << do_test3_110_2();
   out << do_test3_120_2();

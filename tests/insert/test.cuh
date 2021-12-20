@@ -36,7 +36,9 @@ std::string do_test1() {
   fprintf(stderr, "  done\n");
   d_set.free();
   table.free();
+  printf("%-4u%-4u", s, N_H);
   timer.report(S);
+  fflush(stdout);
   fprintf(stderr, "done\n\n");
   return timer.to_string(S);
 }
