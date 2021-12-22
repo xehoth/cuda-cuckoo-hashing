@@ -50,6 +50,6 @@ void Timer::report(std::uint32_t keys) const {
 std::string Timer::to_string(std::uint32_t keys) const {
   double avg = average();
   double mops = keys / 1e6 / avg;
-  return std::to_string(mops) + " " + std::to_string(1000 * stddev()) + " " +
-         std::to_string(avg * 1000) + '\n';
+  return std::to_string(mops) + " " + std::to_string(avg * 1000) + " " +
+         std::to_string(1000 * stddev()) + '\n';
 }

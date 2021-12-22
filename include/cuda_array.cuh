@@ -68,11 +68,11 @@ struct DeviceArray {
     return *this;
   }
 
-  __device__ __forceinline__ DeviceArray &operator=(
-      const DeviceArray<T, S> &rhs) {
+  DeviceArray &operator=(const DeviceArray<T, S> &rhs) {
     if (&rhs == this) return *this;
     checkCudaErrors(
         cudaMemcpy(data, rhs.data, sizeof(T) * S, cudaMemcpyDeviceToDevice));
+    return *this;
   }
 
   [[nodiscard]] constexpr __host__ __device__ __forceinline__ std::uint32_t

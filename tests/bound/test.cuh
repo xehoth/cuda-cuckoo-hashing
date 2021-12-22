@@ -16,12 +16,10 @@ std::string do_test4() {
   constexpr auto C = static_cast<std::uint32_t>(S * 1.4 + 1 - 1e-10);
   constexpr auto bound = static_cast<std::uint32_t>(24 * l / 10.0 + 1 - 1e-10);
   HashTable<C, bound, N_H> table;
-  fprintf(stderr, "  generate random set ... ");
-  HostArray<std::uint32_t, S> h_set = generate_random_set<S>();
-  fprintf(stderr, "done\n");
   DeviceArray<std::uint32_t, S> d_set;
-  d_set = h_set;
-  h_set.free();
+  fprintf(stderr, "  generate random set ... ");
+  RandomSetGenerator<S>::get()->generate_random_set<S>(d_set);
+  fprintf(stderr, "done\n");
   fprintf(stderr, "  begin testing ... \n");
   Timer timer;
   for (int i = 0; i < 5; ++i) {

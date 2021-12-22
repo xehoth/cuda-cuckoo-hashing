@@ -6,17 +6,19 @@
 #include <rng.cuh>
 
 void do_correctness_test() {
+  RandomSetGenerator<(1 << 24)>::get();
   printf("testing correctness ... ");
   constexpr std::uint32_t C = 1 << 25;
   constexpr std::uint32_t S = 1 << 24;
   HashTable<C, 4 * 24, 2> table;
-  HostArray<std::uint32_t, S> h_set = generate_random_set<S>();
-  HostArray<std::uint32_t, S> h_lookup_set = generate_lookup_set<S, 5>(h_set);
+  HostArray<std::uint32_t, S> h_set, h_lookup_set;
   DeviceArray<std::uint32_t, S> d_set;
-  d_set = h_set;
+  RandomSetGenerator<S>::get()->generate_random_set(d_set);
   DeviceArray<std::uint32_t, S> d_lookup_set, d_res;
+  RandomSetGenerator<S>::get()->generate_lookup_set<5>(d_lookup_set);
   HostArray<std::uint32_t, S> h_res;
-  d_lookup_set = h_lookup_set;
+  h_set = d_set;
+  h_lookup_set = d_lookup_set;
   auto check_correctness = [&]() {
     std::unordered_set<std::uint32_t> hash_set;
     for (std::uint32_t i = 0; i < h_set.size(); ++i) hash_set.insert(h_set(i));
@@ -25,8 +27,8 @@ void do_correctness_test() {
     for (std::uint32_t i = 0; i < h_res.size(); ++i) {
       std::uint32_t expected = hash_set.count(h_lookup_set(i));
       if (h_res(i) != expected) {
-        fprintf(stderr, "[wrong answer at (%u: %u), expected: %u]\n", i,
-                h_lookup_set(i), expected);
+        printf("[wrong answer at (%u: %u), expected: %u]\n", i, h_lookup_set(i),
+               expected);
         return;
       }
     }

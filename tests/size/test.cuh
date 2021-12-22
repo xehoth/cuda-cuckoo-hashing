@@ -14,12 +14,10 @@ std::string do_test3() {
           static_cast<double>(C) / (1 << 24), N_H);
   HashTable<C, 4 * 24, N_H> table;
   constexpr std::uint32_t S = 1 << 24;
-  fprintf(stderr, "  generate random set ... ");
-  HostArray<std::uint32_t, S> h_set = generate_random_set<S>();
-  fprintf(stderr, "done\n");
   DeviceArray<std::uint32_t, S> d_set;
-  d_set = h_set;
-  h_set.free();
+  fprintf(stderr, "  generate random set ... ");
+  RandomSetGenerator<S>::get()->generate_random_set<S>(d_set);
+  fprintf(stderr, "done\n");
   fprintf(stderr, "  begin testing ... \n");
   Timer timer;
   for (int i = 0; i < 5; ++i) {
