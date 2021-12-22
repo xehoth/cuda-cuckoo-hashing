@@ -25,7 +25,7 @@ __host__ __device__ __forceinline__ std::uint32_t xxhash(std::uint32_t v) {
 
   auto *byte = reinterpret_cast<std::uint8_t *>(&v);
 
-  for (std::uint32_t i = 0; i < 4; i += 1) {
+  for (std::uint32_t i = 0; i < 4; ++i) {
     hash = hash + byte[i] * PRIME5;
     hash = rotate_left(hash, 11) * PRIME1;
   }
