@@ -38,6 +38,11 @@ struct RandomSetGenerator {
   }
 
   void init();
+  void free() {
+    random_set.free();
+    diff_set.free();
+    lookup_set.free();
+  }
 
   template <std::uint32_t size>
   void generate_random_set(DeviceArray<std::uint32_t, size> output) {
@@ -57,12 +62,6 @@ struct RandomSetGenerator {
                sizeof(std::uint32_t) * choose_from_random,
                cudaMemcpyDeviceToDevice);
     random_shuffle_kernel<<<ceil(S / 512.0), 512>>>(output);
-  }
-
-  ~RandomSetGenerator() {
-    random_set.free();
-    diff_set.free();
-    lookup_set.free();
   }
 
  private:

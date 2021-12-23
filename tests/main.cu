@@ -1,11 +1,6 @@
 //
 // Created by xehoth on 2021/12/11.
 //
-//#include "insert/test.cuh"
-//#include "lookup/test.cuh"
-//#include "size/test.cuh"
-//#include "bound/test.cuh"
-//#include "correctness/test.cuh"
 #include <cstdio>
 #include <cstdlib>
 
