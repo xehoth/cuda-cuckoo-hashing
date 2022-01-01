@@ -246,11 +246,32 @@ By taking advantage of modern compiler, we gain a much higher performance with l
 
 To measure the time precisely, I use cudaEvent to measure the time. I record two cuda events before and after invoking the kernel function, respectively. Before calculating the time elapsed, we need to first synchronize the event to ensure the kernel function has already finished. Then use cudaEventTimeElapsed to calculate the time elapsed. To obtain reliable results, I perform each experiment 5 times. 
 
+\subsection{CUDA Block Size Tuning}
+
+I tuned the CUDA block size with NVIDIA nsight compute. From Figure \ref{fig:block-size}, we can see that we reach highest occupancy with block size of $512$ or $1024$. After further benchmark test, I finally choose $512$ as the block size, which obtains a little bit better performance than choosing $1024$. Because we may have more registers per thread to use when choosing $512$ as the block size.
+
+\begin{strip}
+    \centering
+    \includegraphics[scale=0.7]{figures/occupancy-block-size.png}
+    \label{fig:block-size}
+    Impact of varying block size to warp occupancy 
+\end{strip}
+
 \section{Results}
 
-After running experiments, the benmark result is listed as follows:
+After running experiments, the benchmark result is listed as follows:\\\\
+
+\begin{strip}
+    \centering
+    \includegraphics[scale=0.5]{figures/cmp.png}
+    \label{fig:cmp}
+    Performance comparison with some open source codes
+\end{strip}
+
 
 \subsection{Experiment 1: Insertion}
+
+In this experiment, I create a hash table of size $2^{25}$ in GPU global memory, where each table entry stores a 32-bit integer. I insert a set of $2^s$ random integer keys into the hash table, for $s = 10, 11, \cdots, 24$. And I test for both using $t = 2$ hash functions and $t = 3$ hash functions. To produce reliable result, each experiment are repeated $5$ times.
 
 \begin{figure}[h]
     \centering
@@ -372,6 +393,8 @@ We generally get more than $\mathbf{6\times}$ speedup on TESLA A100 with respect
 
 \subsection{Experiment 2: Lookup}
 
+In this experiment, I insert a set $S$ of $2^{24}$ random keys into a hash table of size $2^{25}$, then perform lookups for the following sets of keys $S_0, \cdots, S_{10}$. Each set $S_i$ contains $2^{24}$ keys, where $(100 - 10i)$ percent of the keys are randomly chosen from $S$, and the remainder are random 32-bit keys. To produce reliable result, each experiment are repeated $5$ times.
+ 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{figures/2.png}
@@ -453,6 +476,8 @@ Therefore, the performance of lookup reaches the peak when all the lookup keys a
 According to Table \ref{tab:lookup_A100}, we get a peak performance of $\mathbf{10944.190395}$ millions of lookups per second with NVIDIA TESLA A100, which is extremely fast while in the worst case all the lookups are done in $2.51\text{ms}$ when $t = 2$. In addition, our implementation still obtains an excellent in the lookup, reaching a speedup of more $\mathbf{6 \times}$ with respected to RTX 2060 SUPER.
 
 \subsection{Experiment 3: Size}
+
+In this experiment, I create a fixed set of $n = 2^{24}$ random keys and measure the time to insert the keys into hash tables of size $sn$ where $s = 1.01, 1.02, 1.05, 1.1, 1.2, \cdots, 2$. I terminate the experiment if the insertion takes too long which means the insert process of Cuckoo Hashing is hard to complete. To produce reliable result, each experiment are repeated $5$ times.
 
 \begin{figure}[!h]
     \centering
@@ -567,7 +592,8 @@ According to Figure \ref{fig:experiment3} and Table \ref{tab:size_3_A100}, on NV
 
 \subsection{Experiment 4: Bound}
 
-I test Cuckoo Hashing with different bounds of $l \log n$ on the maximum length of eviction chain before restarting.
+In this experiment, I use $n = 2^{24}$ random keys and a hash table of size $1.4n$. I test Cuckoo Hashing with different bounds of $l \log n$ on the maximum length of eviction chain before restarting.\\ I terminate the experiment if the insertion takes too long which means the insert process of Cuckoo Hashing is hard to complete. To produce reliable result, each experiment are repeated $5$ times.
+
 
 \begin{figure}[h]
     \centering
@@ -575,8 +601,6 @@ I test Cuckoo Hashing with different bounds of $l \log n$ on the maximum length 
     \caption{Experiment 4: Bound Test}
     \label{fig:experiment4}
 \end{figure}
-
-\vspace{1.23pt}
 
 \begin{table}[!h]
     \centering
@@ -607,13 +631,11 @@ $l$ & $t$ & MOPS    & Time (ms)& StdDev  \\ \midrule
     \label{tab:bound_2_A100}
 \end{table}
 
-\newpage
+From the Table \ref{tab:bound_2_A100}, \ref{tab:bound_3_A100}, \ref{tab:bound_2_2060}, \ref{tab:bound_3_2060} and Figure \ref{fig:experiment4}, we can see that when choosing $2$ hash functions, the performance remains almost the same after $l \geq 1.4$ (bound length $\geq 1.4 \log n$). The peak performances are $4336.965930$ and $4516.142393$ millions of operations per second, respectively.
 
-From the Table \ref{tab:bound_2_A100}, \ref{tab:bound_3_A100}, \ref{tab:bound_2_2060}, \ref{tab:bound_3_2060} and Figure \ref{fig:experiment4}, we can see that when choosing $2$ hash functions, the performance remains almost the same after $l \geq 1.4$ (bound length $\geq 1.4 \log n$).
+When choosing $3$ hash functions, we only need $l \geq 0.4$ to get a good performance. This may because we choose a relative good hash function, xxHash, whose quality is excellent to easily pass Google hash test. And using $3$ hash function itself makes the number of evictions much fewer than using $2$ hash functions.
 
-When choosing $3$ hash functions, we only need $l \geq 0.4$ to get a good performance. 
-
-The best bound in our experiment is bolded in the table.
+The best bound in our experiment is bolded in the table below, see Table \ref{tab:bound_2_A100}, \ref{tab:bound_3_A100}, \ref{tab:bound_2_2060}, \ref{tab:bound_3_2060} and Figure \ref{fig:experiment4} for more details.
 
 \begin{table}[!h]
     \centering
@@ -702,6 +724,10 @@ $l$ & $t$ & MOPS    & Time (ms)& StdDev  \\ \midrule
     \label{tab:bound_3_2060}
 \end{table}
 
+\subsection{Comparison with Others}
+
+I compare my program's performance with some open source code found in github. From Figure at the top of result section, we can find that our program obtain a much higher performance both in insertion and lookup than all the open source codes I compared.\\
+All the codes are tested in the same environment with GPU of NVIDIA RTX 2060 SUPER except for the first column (the result of my code on NVIDIA TESLA A100). 
 
 % \begin{strip}
 % \centering
