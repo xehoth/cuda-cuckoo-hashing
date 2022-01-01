@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 int main() {
-  freopen("test.log", "w", stderr);
+//  freopen("test.log", "w", stderr);
 #ifdef _WIN32
   system("main_test1");
   system("main_test2");
