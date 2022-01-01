@@ -66,7 +66,7 @@
 
 \begin{abstract}
 
-In computing, a hash table is a widely used data structure that implements an associative array abstract structure, a structure that maps keys to values. Cuckoo Hashing is one among the hashing techniques which provides high memory usage with constant time access \cite{Chadalavada2017ImprovingCH}. At the same time, GPU makes high throughput hash table possible. In this lab, I implement Cuckoo Hashing use CUDA as well as testing correctness and doing experiments to analyze performance.
+In computing, hash table is a widely used data structure that implements an associative array abstract structure, a structure that maps keys to values. Cuckoo Hashing is one among the hashing techniques which provides high memory usage with constant time access \cite{Chadalavada2017ImprovingCH}. At the same time, GPU makes high throughput hash table possible. In this lab, I implement Cuckoo Hashing use CUDA as well as testing correctness and doing experiments to analyze performance.
 
 \end{abstract} 
 
@@ -96,7 +96,7 @@ It will first insert the given keys into the hash table and then do the lookup a
 
 \subsection{Benchmark Configures}
 
-I run my code on my own computer. The detailed information are:
+I run my code on my own computer. The detailed information is:
 
 \begin{table}[h]
 \begin{tabular}{@{}c|c@{}}
@@ -116,7 +116,7 @@ Driver Version & GeForce Game Ready Driver 497.29 \\
 \end{tabular}
 \end{table}
 
-To test scalability, I also run my code on a cloud virtual machine provided by tencent cloud. The detailed information are:
+To test scalability, I also run my code on a cloud virtual machine provided by tencent cloud. The detailed information is:
 
 \begin{table}[h]
 \begin{tabular}{@{}c|c@{}}
@@ -192,7 +192,7 @@ Since Cuckoo Hashing needs to maintain $t$ tables where $t$ is the number of has
 
 \subsection{Memory Management}
 
-For hash table, we mainly need some big linear arrays. Although unified memory can greatly decrease the difficulty for memory management between device and code. But it needs some techniques to achieve good performance and it may still perform a little bit worse than directly manage host and device memory. Therefore, I create a class to encapsulate cuda array. By overloading assignment operator, I can make copy operation between device and host simpler. Also, by encapsulation, I can allocate and free the memory by some class methods easily. 
+For hash table, we mainly need some big linear arrays. Although unified memory can greatly decrease the difficulty for memory management between device and host. But it needs some techniques to achieve good performance and it may still perform a little bit worse than directly manage host and device memory. Therefore, I create a class to encapsulate cuda array. By overloading assignment operator, I can make copy operation between device and host simpler. Also, by encapsulation, I can allocate and free the memory by some class methods easily. 
 
 \subsection{Random Set Generation}
 
@@ -202,7 +202,7 @@ For the lookup set generation, I first generate a totally different set respecte
 \subsection{Multi-level Table}
 
 One possible method to improve the performance of our GPU hash table is to use multi-level table \cite{analysinghashtable}. The bottleneck of Cuckoo Hashing is memory access, uncoalesced global memory access will greatly influence our performance. So, we may create multi-level tables. For example, two-level Cuckoo Hashing, we first hash the elements into different buckets and then perform Cuckoo Hashing locally inside those buckets.\\
-This often performs better than single-level table when needing rehashing. However, in our experiments, we do not need to rehash that much and according to the result in \cite{analysinghashtable}, the multi-level table performs even worse than single-level. Therefore, I choose to not use multi-level table and in my experiments, I compared my code with an existing multi-level cuckoo hashing code and I performs much better than him.
+This often performs better than single-level table when rehashing is needed. However, in our experiments, we do not need to rehash that much and according to the result in \cite{analysinghashtable}, the multi-level table performs even worse than single-level. Therefore, I choose to not use multi-level table and in my experiments, I compared my code with an existing multi-level cuckoo hashing code and I performs much better than him.
 
 \subsection{Parallel d-Pipeline}
 
@@ -229,11 +229,11 @@ However, we need to ensure $p > m$ and $p > $ all keys. In our experiments, the 
 
 \subsubsection{Perfect Hashing}
 
-This is the ideal hash function because it maps different key to exactly different values. However, minimal perfect hashing costs too much time during construction \cite{Chadalavada2017ImprovingCH} while some other variants of perfect hashing like achieving this by take two level universal hashing, are hard to used in Cuckoo Hashing and cannot support newly come keys.
+This is the ideal hash function because it maps different key to exactly different values. However, minimal perfect hashing costs too much time during construction \cite{Chadalavada2017ImprovingCH} while some other variants of perfect hashing like achieving this by take two level universal hashing, are hard to use in Cuckoo Hashing and cannot support newly come keys.
 
 \subsubsection{xxHash}
 
-xxHash is an Extremely fast Hash algorithm, running at RAM speed limits \cite{collet2016xxhash}. Besides extremely high performance, it provides excellent quality which passes Google hash tests. After testing different hash functions, xxHash performs better in most cases. So, I use xxHash as the hash functions at last.
+xxHash is an extremely fast Hash algorithm, running at RAM speed limits \cite{collet2016xxhash}. Besides extremely high performance, it provides excellent quality which passes Google hash tests. After testing different hash functions, xxHash performs better in most cases. So, I use xxHash as the hash functions at last.
 
 \subsection{Template metaprogramming}
 
@@ -254,7 +254,7 @@ I tuned the CUDA block size with NVIDIA nsight compute. From Figure \ref{fig:blo
     \centering
     \includegraphics[scale=0.7]{figures/occupancy-block-size.png}
     \label{fig:block-size}
-    Impact of varying block size to warp occupancy 
+    Figure 2.10: Impact of varying block size to warp occupancy 
 \end{strip}
 
 \section{Results}
