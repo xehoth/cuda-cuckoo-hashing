@@ -726,8 +726,17 @@ $l$ & $t$ & MOPS    & Time (ms)& StdDev  \\ \midrule
 
 \subsection{Comparison with Others}
 
-I compare my program's performance with some open source code found in github. From Figure at the top of result section, we can find that our program obtain a much higher performance both in insertion and lookup than all the open source codes I compared.\\
+I compare my program's performance with some open source code found in github. From Figure \ref{fig:comparison}, we can find that our program obtain a much higher performance both in insertion and lookup than all the open source codes I compared.\\
+In these codes, chibinz implements a multi-level Cuckoo Hashing with stash table \cite{chibinz} while josehu07 gives a multi-level Cuckoo hashing with shared memory \cite{josehu07}. Warp-level optimizations are used by victoryang00 \cite{victoryang00} and xiezhq-hermann did optimizations on the simple Cuckoo hashing \cite{xiezhq-hermann}.
+
 All the codes are tested in the same environment with GPU of NVIDIA RTX 2060 SUPER except for the first column (the result of my code on NVIDIA TESLA A100). 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=0.5]{figures/cmp.png}
+    \caption{Performance comparison with some open source codes}
+    \label{fig:comparison}
+\end{figure}
+
 
 % \begin{strip}
 % \centering
