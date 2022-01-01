@@ -1,5 +1,7 @@
 # Cuckoo Hashing using CUDA
 
+High performance parallel hash table based on Cuckoo Hashing using CUDA.
+
 ## Build
 
 ```shell
@@ -22,3 +24,9 @@ or
 ## Experiments
 
 See details in [report](report.pdf).
+
+## Performance
+
+![](report/figures/1.png)
+![](report/figures/2.png)
+![](report/figures/cmp.png)
