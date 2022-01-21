@@ -1,5 +1,6 @@
 # Cuckoo Hashing using CUDA
 
+ShanghaiTech CS121 Parallel Computing Fall 2021 Lab2.  
 High performance parallel hash table based on Cuckoo Hashing using CUDA.
 
 ## Build
